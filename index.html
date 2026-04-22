@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Overview Section</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-display: 'Bricolage Grotesque', -apple-system, sans-serif;
+  --font-body:    'Figtree', -apple-system, sans-serif;
+
+  --purple:  #7c3aed; --purple-bg:  #f5f3ff;
+  --emerald: #059669; --emerald-bg: #ecfdf5;
+  --rose:    #e11d48; --rose-bg:    #fff1f2;
+  --sky:     #0284c7; --sky-bg:     #f0f9ff;
+  --amber:   #b45309; --amber-bg:   #fffbeb;
+  --teal:    #0d9488; --teal-bg:    #f0fdfa;
+  --indigo:  #4338ca; --indigo-bg:  #eef2ff;
+
+  --gray-50:  #f9fafb; --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb; --gray-300: #d1d5db;
+  --gray-400: #9ca3af; --gray-500: #6b7280;
+  --gray-600: #4b5563; --gray-700: #374151;
+  --gray-900: #111827;
+
+  --ease-out:    cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
+}
+
+body {
+  font-family: var(--font-body);
+  background: #eef0f3;
+  min-height: 100vh;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── View tag ─────────────────────────────────────────────────────── */
+.view-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--gray-400);
+  margin-bottom: 6px;
+}
+.view-tag::before {
+  content: '';
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ── Panel shell ──────────────────────────────────────────────────── */
+.overview-panel {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid var(--gray-200);
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.015),
+    0 2px 6px rgba(0,0,0,0.04),
+    0 8px 28px rgba(0,0,0,0.05);
+  overflow: hidden;
+  max-width: 1200px;
+}
+
+/* ── Panel top bar ────────────────────────────────────────────────── */
+.panel-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 0;
+  gap: 12px;
+}
+
+.breadcrumb {
+  font-size: 11.5px;
+  color: var(--gray-400);
+  font-family: var(--font-body);
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.breadcrumb-sep {
+  width: 12px; height: 12px;
+  color: var(--gray-300);
+  flex-shrink: 0;
+}
+
+.agent-badge {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+  padding: 3px 10px;
+  border-radius: 99px;
+}
+
+/* ── Tabs ─────────────────────────────────────────────────────────── */
+.tabs-row {
+  padding: 10px 20px 0;
+}
+.tabs {
+  position: relative;
+  display: inline-flex;
+  background: var(--gray-100);
+  border-radius: 11px;
+  padding: 3px;
+  gap: 0;
+}
+.tab-btn {
+  position: relative;
+  z-index: 1;
+  padding: 6px 18px;
+  border-radius: 9px;
+  border: none;
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--gray-500);
+  cursor: pointer;
+  transition: color 160ms var(--ease-snappy);
+  white-space: nowrap;
+}
+.tab-btn.active { color: var(--gray-900); font-weight: 600; }
+.tab-indicator {
+  position: absolute;
+  top: 3px; bottom: 3px;
+  border-radius: 8px;
+  background: white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.07);
+  transition: left 220ms var(--ease-out), width 220ms var(--ease-out);
+  pointer-events: none;
+}
+
+.no-tabs-title {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-top: 2px;
+}
+
+/* ── Tab panels ───────────────────────────────────────────────────── */
+.tab-panel { display: none; }
+.tab-panel.active {
+  display: block;
+  animation: panelIn 230ms var(--ease-out) both;
+}
+@keyframes panelIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Stats body ───────────────────────────────────────────────────── */
+.stats-body {
+  padding: 14px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ── Entrance keyframe ────────────────────────────────────────────── */
+@keyframes itemIn {
+  from { opacity: 0; transform: translateY(7px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Row 1: Horizontal metric strip ──────────────────────────────── */
+.metric-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: var(--gray-50);
+  border-radius: 14px;
+  border: 1px solid var(--gray-100);
+  overflow: hidden;
+}
+.metric-item {
+  padding: 14px 18px;
+  position: relative;
+  animation: itemIn 320ms var(--ease-out) both;
+}
+/* stagger each column */
+.metric-item:nth-child(1) { animation-delay:  60ms; }
+.metric-item:nth-child(2) { animation-delay: 110ms; }
+.metric-item:nth-child(3) { animation-delay: 160ms; }
+.metric-item:nth-child(4) { animation-delay: 210ms; }
+/* keep .entered class for JS-driven re-entrance but not required for initial paint */
+.metric-item.entered { animation: none; opacity: 1; transform: none; }
+.metric-item + .metric-item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 14px; bottom: 14px;
+  width: 1px;
+  background: var(--gray-200);
+}
+@media (hover: hover) and (pointer: fine) {
+  .metric-item:hover {
+    background: white;
+    border-radius: 0;
+  }
+}
+
+.metric-label {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.metric-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.metric-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Color classes for strip items */
+.m-purple .metric-label { color: var(--purple); }
+.m-purple .metric-value { color: #3b0764; }
+
+.m-emerald .metric-label { color: var(--emerald); }
+.m-emerald .metric-value { color: #064e3b; }
+
+.m-rose .metric-label { color: var(--rose); }
+.m-rose .metric-value { color: #881337; }
+
+.m-sky .metric-label { color: var(--sky); }
+.m-sky .metric-value { color: #0c4a6e; }
+
+/* ── Row 2: Feature cards ─────────────────────────────────────────── */
+.feature-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+
+.feat-card {
+  border-radius: 14px;
+  padding: 15px 17px;
+  cursor: default;
+  animation: itemIn 320ms var(--ease-out) both;
+  transition: transform 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+}
+.feat-card:nth-child(1) { animation-delay: 240ms; }
+.feat-card:nth-child(2) { animation-delay: 290ms; }
+.feat-card:nth-child(3) { animation-delay: 340ms; }
+.feat-card.entered { animation: none; opacity: 1; transform: none; }
+@media (hover: hover) and (pointer: fine) {
+  .feat-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.09);
+  }
+}
+.feat-card:active {
+  transform: scale(0.976) !important;
+  transition-duration: 90ms;
+}
+
+.feat-card .feat-label {
+  font-family: var(--font-body);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.feat-card .feat-value {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.feat-card .feat-sub {
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-top: 5px;
+}
+
+.fc-amber {
+  background: var(--amber-bg);
+  border: 1px solid #fde68a;
+}
+.fc-amber .feat-label { color: var(--amber); }
+.fc-amber .feat-value { color: #78350f; }
+
+.fc-teal {
+  background: var(--teal-bg);
+  border: 1px solid #99f6e4;
+}
+.fc-teal .feat-label { color: var(--teal); }
+.fc-teal .feat-value { color: #134e4a; }
+
+.fc-indigo {
+  background: var(--indigo-bg);
+  border: 1px solid #c7d2fe;
+}
+.fc-indigo .feat-label { color: var(--indigo); }
+.fc-indigo .feat-value { color: #1e1b4b; }
+
+/* ── Progress bar — scaleX transform (GPU-accelerated) ───────────── */
+.prog-wrap { margin-top: 10px; }
+.prog-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.prog-amount {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--amber);
+}
+.prog-target {
+  font-size: 11.5px;
+  color: var(--gray-400);
+}
+.prog-track {
+  height: 5px;
+  border-radius: 99px;
+  background: rgba(180,83,9,0.14);
+  overflow: hidden;
+}
+.prog-fill {
+  height: 100%;
+  width: 100%; /* stays full-width; scaleX controls visual size */
+  border-radius: 99px;
+  background: linear-gradient(90deg, #fbbf24, #d97706);
+  transform: scaleX(0);
+  transform-origin: left;
+  /* GPU-accelerated — no width animation */
+  transition: transform 750ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.prog-fill[data-target] { /* set by JS */ }
+
+/* ── Split bar ────────────────────────────────────────────────────── */
+.split-wrap { margin-top: 10px; }
+.split-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.split-a-lbl {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--teal);
+}
+.split-b-lbl {
+  font-size: 11.5px;
+  color: var(--gray-400);
+}
+.split-bar {
+  display: grid;
+  grid-template-columns: 70fr 30fr;
+  gap: 2px;
+  height: 5px;
+}
+.split-a {
+  background: var(--teal);
+  border-radius: 99px 0 0 99px;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 700ms 120ms var(--ease-out);
+}
+.split-b {
+  background: rgba(13,148,136,0.2);
+  border-radius: 0 99px 99px 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 700ms 340ms var(--ease-out);
+}
+.split-a.go, .split-b.go { transform: scaleX(1); }
+
+/* ── prefers-reduced-motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .metric-item, .feat-card { transition: none !important; opacity: 1; transform: none !important; }
+  .prog-fill { transition: none; transform: scaleX(var(--prog-val, 0)); }
+  .split-a, .split-b { transition: none; transform: scaleX(1); }
+  .tab-indicator { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════════
+     TEAM LEAD — My Overview + Team Overview tabs
+════════════════════════════════════════════════════ -->
+<div>
+  <div class="view-tag">Team Lead</div>
+
+  <div class="overview-panel">
+    <div class="panel-topbar"></div>
+
+    <div class="tabs-row">
+      <div class="tabs" id="tl-tabs">
+        <div class="tab-indicator" id="tl-ind"></div>
+        <button class="tab-btn active" data-panel="tl-my"   onclick="switchTab('tl',this)">My Overview</button>
+        <button class="tab-btn"        data-panel="tl-team" onclick="switchTab('tl',this)">Team Overview</button>
+      </div>
+    </div>
+
+    <!-- My Overview -->
+    <div class="tab-panel active" id="tl-my">
+      <div class="stats-body">
+
+        <div class="metric-strip">
+          <div class="metric-item m-purple">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--purple)"></span>Active Listings</div>
+            <div class="metric-value" data-count="46">46</div>
+          </div>
+          <div class="metric-item m-emerald">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--emerald)"></span>Pending Transactions</div>
+            <div class="metric-value" data-count="292">292</div>
+          </div>
+          <div class="metric-item m-rose">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--rose)"></span>Closed (YTD)</div>
+            <div class="metric-value" data-count="0">0</div>
+          </div>
+          <div class="metric-item m-sky">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--sky)"></span>Earnings (YTD)</div>
+            <div class="metric-value" data-prefix="$" data-count="0">$0</div>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <div class="feat-card fc-amber">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--amber)"></span>Progress to Cap — Team</div>
+            <div class="feat-value">67%</div>
+            <div class="prog-wrap">
+              <div class="prog-meta">
+                <span class="prog-amount">$67,000 of $100,000</span>
+                <span class="prog-target">team cap</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" data-target="0.67"></div></div>
+            </div>
+          </div>
+
+          <div class="feat-card fc-teal">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--teal)"></span>Split with Team Lead</div>
+            <div class="feat-value">70<span style="font-family:var(--font-body);font-size:17px;font-weight:500;opacity:0.45;margin:0 4px">/</span>30</div>
+            <div class="split-wrap">
+              <div class="split-meta">
+                <span class="split-a-lbl">Agent 70%</span>
+                <span class="split-b-lbl">Lead 30%</span>
+              </div>
+              <div class="split-bar">
+                <div class="split-a"></div>
+                <div class="split-b"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feat-card fc-indigo">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--indigo)"></span>Cap Anniversary</div>
+            <div class="feat-value">Jun 15</div>
+            <div class="feat-sub">54 days away &nbsp;·&nbsp; 2026</div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /tl-my -->
+
+    <!-- Team Overview -->
+    <div class="tab-panel" id="tl-team">
+      <div class="stats-body">
+
+        <div class="metric-strip">
+          <div class="metric-item m-purple">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--purple)"></span>Team Listings</div>
+            <div class="metric-value" data-count="134">134</div>
+          </div>
+          <div class="metric-item m-emerald">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--emerald)"></span>Team Pending</div>
+            <div class="metric-value" data-count="847">847</div>
+          </div>
+          <div class="metric-item m-rose">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--rose)"></span>Team Closed (YTD)</div>
+            <div class="metric-value" data-count="12">12</div>
+          </div>
+          <div class="metric-item m-sky">
+            <div class="metric-label"><span class="metric-dot" style="background:var(--sky)"></span>Team Earnings (YTD)</div>
+            <div class="metric-value" data-prefix="$" data-count="124500">$124,500</div>
+          </div>
+        </div>
+
+        <div class="feature-row">
+          <div class="feat-card fc-amber">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--amber)"></span>Team Cap Progress</div>
+            <div class="feat-value">42%</div>
+            <div class="prog-wrap">
+              <div class="prog-meta">
+                <span class="prog-amount">$168,000 of $400,000</span>
+                <span class="prog-target">team cap</span>
+              </div>
+              <div class="prog-track"><div class="prog-fill" data-target="0.42"></div></div>
+            </div>
+          </div>
+
+          <div class="feat-card fc-teal">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--teal)"></span>Avg Agent Split</div>
+            <div class="feat-value">68<span style="font-family:var(--font-body);font-size:17px;font-weight:500;opacity:0.45;margin:0 4px">/</span>32</div>
+            <div class="split-wrap">
+              <div class="split-meta">
+                <span class="split-a-lbl">Agent 68%</span>
+                <span class="split-b-lbl">Lead 32%</span>
+              </div>
+              <div class="split-bar">
+                <div class="split-a"></div>
+                <div class="split-b"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="feat-card fc-indigo">
+            <div class="feat-label"><span class="metric-dot" style="background:var(--indigo)"></span>Active Agents</div>
+            <div class="feat-value">8</div>
+            <div class="feat-sub">2 nearing cap &nbsp;·&nbsp; 6 active</div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /tl-team -->
+
+  </div>
+</div>
+
+
+<!-- ════════════════════════════════════════════════════
+     AGENT — Overview only, no tabs
+════════════════════════════════════════════════════ -->
+<div>
+  <div class="view-tag">Agent</div>
+
+  <div class="overview-panel">
+    <div class="panel-topbar">
+      <div>
+        <div>
+        </div>
+        <div class="no-tabs-title">My Overview</div>
+      </div>
+      <span class="agent-badge">Agent</span>
+    </div>
+
+    <div class="stats-body">
+
+      <div class="metric-strip">
+        <div class="metric-item m-purple">
+          <div class="metric-label"><span class="metric-dot" style="background:var(--purple)"></span>Active Listings</div>
+          <div class="metric-value" data-count="46">46</div>
+        </div>
+        <div class="metric-item m-emerald">
+          <div class="metric-label"><span class="metric-dot" style="background:var(--emerald)"></span>Pending Transactions</div>
+          <div class="metric-value" data-count="292">292</div>
+        </div>
+        <div class="metric-item m-rose">
+          <div class="metric-label"><span class="metric-dot" style="background:var(--rose)"></span>Closed (YTD)</div>
+          <div class="metric-value" data-count="0">0</div>
+        </div>
+        <div class="metric-item m-sky">
+          <div class="metric-label"><span class="metric-dot" style="background:var(--sky)"></span>Earnings (YTD)</div>
+          <div class="metric-value" data-prefix="$" data-count="0">$0</div>
+        </div>
+      </div>
+
+      <div class="feature-row">
+        <div class="feat-card fc-amber">
+          <div class="feat-label"><span class="metric-dot" style="background:var(--amber)"></span>Progress to Cap</div>
+          <div class="feat-value">67%</div>
+          <div class="prog-wrap">
+            <div class="prog-meta">
+              <span class="prog-amount">$67,000 of $100,000</span>
+              <span class="prog-target">cap</span>
+            </div>
+            <div class="prog-track"><div class="prog-fill" data-target="0.67"></div></div>
+          </div>
+        </div>
+
+        <div class="feat-card fc-teal">
+          <div class="feat-label"><span class="metric-dot" style="background:var(--teal)"></span>Split with Team Lead</div>
+          <div class="feat-value">70<span style="font-family:var(--font-body);font-size:17px;font-weight:500;opacity:0.45;margin:0 4px">/</span>30</div>
+          <div class="split-wrap">
+            <div class="split-meta">
+              <span class="split-a-lbl">Agent 70%</span>
+              <span class="split-b-lbl">Lead 30%</span>
+            </div>
+            <div class="split-bar">
+              <div class="split-a"></div>
+              <div class="split-b"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="feat-card fc-indigo">
+          <div class="feat-label"><span class="metric-dot" style="background:var(--indigo)"></span>Cap Anniversary</div>
+          <div class="feat-value">Jun 15</div>
+          <div class="feat-sub">54 days away &nbsp;·&nbsp; 2026</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+/* ── Tab indicator ─────────────────────────────────────────────────── */
+function initIndicator(prefix) {
+  const tabs = document.getElementById(`${prefix}-tabs`);
+  const ind  = document.getElementById(`${prefix}-ind`);
+  const move = btn => {
+    const tr = tabs.getBoundingClientRect();
+    const br = btn.getBoundingClientRect();
+    ind.style.left   = (br.left - tr.left) + 'px';
+    ind.style.width  = br.width + 'px';
+    ind.style.top    = '3px';
+    ind.style.bottom = '3px';
+  };
+  tabs._move = move;
+  requestAnimationFrame(() => move(tabs.querySelector('.tab-btn.active')));
+}
+
+function switchTab(prefix, btn) {
+  const tabs    = document.getElementById(`${prefix}-tabs`);
+  const buttons = tabs.querySelectorAll('.tab-btn');
+  buttons.forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  tabs._move(btn);
+
+  // Hide all panels for this prefix, show target
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const target = document.getElementById(btn.dataset.panel);
+  target.classList.add('active');
+
+  // Re-fire bars + count-up for newly visible panel
+  setTimeout(() => {
+    animateBars(target);
+    target.querySelectorAll('[data-count]').forEach(countUp);
+  }, 100);
+}
+
+/* ── Enter a panel's elements ─────────────────────────────────────── */
+function animatePanel(panel, delay = 0) {
+  const items = panel.querySelectorAll('.metric-item, .feat-card');
+  items.forEach(el => { el.classList.remove('entered'); el.style.opacity = '0'; });
+
+  requestAnimationFrame(() => {
+    items.forEach((el, i) => {
+      const d = delay + i * 42;
+      el.style.transitionDelay = d + 'ms';
+      setTimeout(() => el.classList.add('entered'), d);
+    });
+    const clearAt = delay + items.length * 42 + 320;
+    setTimeout(() => items.forEach(el => { el.style.transitionDelay = ''; }), clearAt);
+
+    // Bars after strip settles
+    setTimeout(() => {
+      animateBars(panel);
+      panel.querySelectorAll('[data-count]').forEach(countUp);
+    }, delay + 180);
+  });
+}
+
+/* ── GPU-accelerated progress bars ────────────────────────────────── */
+function animateBars(scope) {
+  scope.querySelectorAll('.prog-fill').forEach(el => {
+    const t = parseFloat(el.dataset.target || 0);
+    el.style.transform = 'scaleX(0)';
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      el.style.transform = `scaleX(${t})`;
+    }));
+  });
+  scope.querySelectorAll('.split-a, .split-b').forEach(el => {
+    el.classList.remove('go');
+    requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('go')));
+  });
+}
+
+/* ── Number count-up ──────────────────────────────────────────────── */
+function countUp(el) {
+  const target = parseInt(el.dataset.count, 10);
+  const prefix = el.dataset.prefix || '';
+  if (!target) return;
+  const dur = Math.min(900, Math.max(320, target * 0.6));
+  const t0  = performance.now();
+  const fmt = n => prefix + (n >= 1000 ? n.toLocaleString() : String(n));
+  const tick = now => {
+    const p = Math.min((now - t0) / dur, 1);
+    const e = 1 - Math.pow(1 - p, 3);          // ease-out-cubic
+    el.textContent = fmt(Math.round(e * target));
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
+
+/* ── Fire bars + count-up on load (no IO needed for above-fold) ───── */
+document.addEventListener('DOMContentLoaded', () => {
+  // Animate all visible panels immediately
+  document.querySelectorAll('.tab-panel.active .stats-body').forEach(body => {
+    setTimeout(() => {
+      animateBars(body);
+      body.querySelectorAll('[data-count]').forEach(countUp);
+    }, 350); // after card entrance settles
+  });
+});
+
+/* ── Init tabs ────────────────────────────────────────────────────── */
+requestAnimationFrame(() => initIndicator('tl'));
+</script>
+</body>
+</html>
